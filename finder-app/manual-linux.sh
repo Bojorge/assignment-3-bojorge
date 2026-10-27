@@ -223,8 +223,9 @@ copy_runtime_dependencies()
             return 1
         fi
 
+        #destination="$ROOTFS/lib64/$library"
         destination="$ROOTFS/lib/$library"
-
+        
         sudo mkdir -p "$(dirname "$destination")"
         sudo cp -L "$library_path" "$destination"
 
@@ -291,6 +292,13 @@ echo "Setting root filesystem ownership..."
 sudo chown -R root:root "$ROOTFS"
 
 # --------------------------------------------------
+# 10b. Compatibility symlinks for dynamic loader
+# --------------------------------------------------
+sudo rm -rf "$ROOTFS/lib64" "$ROOTFS/usr/lib64"
+sudo ln -sfn lib "$ROOTFS/lib64"
+sudo ln -sfn ../lib "$ROOTFS/usr/lib64"
+
+# --------------------------------------------------
 # 11. Create the compressed initramfs archive
 # --------------------------------------------------
 
@@ -330,4 +338,3 @@ echo "Kernel image: $OUTDIR/Image"
 echo "Initramfs: $OUTDIR/initramfs.cpio.gz"
 echo
 echo "Next step: boot the system using the QEMU scripts."
-
